@@ -1,6 +1,6 @@
 # Clone Organisation Repoistories
 
-Clones or updates
+Clones or pulls all repositories from a given GitHub organisation.
 
 ## Usage
 
