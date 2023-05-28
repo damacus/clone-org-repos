@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.7.0
 	github.com/shurcooL/githubv4 v0.0.0-20230424031643-6cea62ecd5a9
 	github.com/spf13/cobra v1.7.0
-	golang.org/x/oauth2 v0.7.0
+	golang.org/x/oauth2 v0.8.0
 )
 
 require (
