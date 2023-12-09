@@ -3,7 +3,7 @@ module github.com/damacus/clone-org-repos
 go 1.19
 
 require (
-	github.com/go-git/go-git/v5 v5.10.1
+	github.com/go-git/go-git/v5 v5.11.0
 	github.com/shurcooL/githubv4 v0.0.0-20231126234147-1cffa1f02456
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/oauth2 v0.15.0
