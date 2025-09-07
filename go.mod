@@ -1,6 +1,6 @@
 module github.com/damacus/clone-org-repos
 
-go 1.23.0
+go 1.24.0
 
 toolchain go1.25.1
 
@@ -8,7 +8,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.2
 	github.com/shurcooL/githubv4 v0.0.0-20240727222349-48295856cce7
 	github.com/spf13/cobra v1.10.1
-	golang.org/x/oauth2 v0.30.0
+	golang.org/x/oauth2 v0.31.0
 )
 
 require (
