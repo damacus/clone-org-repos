@@ -2,6 +2,7 @@ package checkout
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -45,7 +46,7 @@ func Checkout(token, org, path string) {
 
 	for _, node := range allNodes {
 		Info("Cloning repository: " + node.Name)
-		Info("SSH CLone URL: " + node.SshUrl)
+		Info("SSH Clone URL: " + node.SshUrl)
 		cloneOrUpdate(filepath.Join(path, org, node.Name), node.SshUrl)
 	}
 }
@@ -83,7 +84,13 @@ func cloneOrUpdate(directory string, url string) {
 		checkIfError(err)
 
 		Info("git pull origin")
-		w.Pull(&git.PullOptions{RemoteName: "origin"})
+		err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+		if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+			checkIfError(err)
+		}
+		if errors.Is(err, git.NoErrAlreadyUpToDate) {
+			Warning("Repository already up to date")
+		}
 
 		// Print the latest commit that was just pulled
 		ref, err := r.Head()
@@ -106,11 +113,11 @@ func checkIfError(err error) {
 }
 
 // Info should be used to describe the example commands that are about to run.
-func Info(format string, args ...interface{}) {
-	fmt.Printf("\x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+func Info(message string) {
+	fmt.Printf("\x1b[34;1m%s\x1b[0m\n", message)
 }
 
 // Warning should be used to display a warning
-func Warning(format string, args ...interface{}) {
-	fmt.Printf("\x1b[36;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+func Warning(message string) {
+	fmt.Printf("\x1b[36;1m%s\x1b[0m\n", message)
 }
