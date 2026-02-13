@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>damacus/renovate-config",
-    "github>damacus/renovate-config:autoMergeGitHubActions"
+    "local>damacus/renovate-config",
+    "local>damacus/renovate-config:autoMergeGitHubActions"
   ]
 }
