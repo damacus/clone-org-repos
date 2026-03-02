@@ -13,6 +13,10 @@ import (
 )
 
 func Checkout(token, org, path string) {
+	if !isValidName(org) {
+		checkIfError(fmt.Errorf("invalid organization name: %s", org))
+	}
+
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	)
@@ -45,10 +49,21 @@ func Checkout(token, org, path string) {
 	}
 
 	for _, node := range allNodes {
+		if !isValidName(node.Name) {
+			Warning("Skipping repository with invalid name: " + node.Name)
+			continue
+		}
 		Info("Cloning repository: " + node.Name)
 		Info("SSH Clone URL: " + node.SshUrl)
 		cloneOrUpdate(filepath.Join(path, org, node.Name), node.SshUrl)
 	}
+}
+
+func isValidName(name string) bool {
+	if name == "" || name == "." || name == ".." {
+		return false
+	}
+	return filepath.Base(name) == name
 }
 
 var query struct {

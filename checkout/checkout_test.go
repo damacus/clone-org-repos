@@ -138,3 +138,27 @@ func repoHeadHash(t *testing.T, repoDir string) string {
 
 	return head.Hash().String()
 }
+
+func TestIsValidName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{"valid name", "my-repo", true},
+		{"empty name", "", false},
+		{"dot", ".", false},
+		{"dot-dot", "..", false},
+		{"path traversal", "../../etc/passwd", false},
+		{"sub directory", "subdir/repo", false},
+		{"absolute path", "/tmp/repo", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isValidName(tt.input); got != tt.expected {
+				t.Errorf("isValidName(%q) = %v, want %v", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
