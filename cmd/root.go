@@ -35,12 +35,12 @@ var rootCmd = &cobra.Command{
 			return errors.New("GITHUB_TOKEN must be set")
 		}
 
-		org, err := getStringFlag("org", cmd)
+		org, err := cmd.Flags().GetString("org")
 		if err != nil {
 			return err
 		}
 
-		path, err := getStringFlag("path", cmd)
+		path, err := cmd.Flags().GetString("path")
 		if err != nil {
 			return err
 		}
@@ -72,12 +72,4 @@ func init() {
 	rootCmd.PersistentFlags().StringP("path", "p", "", "Path to checkout repositories to, defaults to user's home directory")
 	rootCmd.PersistentFlags().StringP("org", "o", "", "Name of the org you wish to checkout")
 	cobra.CheckErr(rootCmd.MarkPersistentFlagRequired("org"))
-}
-
-func getStringFlag(flagName string, cmd *cobra.Command) (string, error) {
-	name, err := cmd.Flags().GetString(flagName)
-	if err != nil {
-		return "", err
-	}
-	return name, nil
 }

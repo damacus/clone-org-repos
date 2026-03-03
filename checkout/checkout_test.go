@@ -1,7 +1,9 @@
 package checkout
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
