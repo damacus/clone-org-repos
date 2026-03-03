@@ -84,7 +84,7 @@ type node struct {
 }
 
 func cloneOrUpdate(directory string, url string) {
-	if _, err := os.Stat(directory); os.IsNotExist(err) {
+	if _, err := os.Stat(directory); errors.Is(err, os.ErrNotExist) {
 		_, err := git.PlainClone(directory, false, &git.CloneOptions{
 			URL:      url,
 			Progress: os.Stdout,
