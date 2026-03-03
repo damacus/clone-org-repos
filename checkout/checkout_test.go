@@ -1,7 +1,9 @@
 package checkout
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -160,5 +162,77 @@ func TestIsValidName(t *testing.T) {
 				t.Errorf("isValidName(%q) = %v, want %v", tt.input, got, tt.expected)
 			}
 		})
+	}
+}
+
+func TestInfo(t *testing.T) {
+	// Save original stdout
+	oldStdout := os.Stdout
+	defer func() { os.Stdout = oldStdout }()
+
+	// Create a pipe
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
+
+	// Replace stdout
+	os.Stdout = w
+
+	// Call Info
+	expectedMessage := "Test info message"
+	Info(expectedMessage)
+
+	// Close writer so reader can finish reading
+	w.Close()
+
+	// Read from pipe
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, r)
+	if err != nil {
+		t.Fatalf("Failed to read from pipe: %v", err)
+	}
+
+	expectedOutput := "\x1b[34;1m" + expectedMessage + "\x1b[0m\n"
+	actualOutput := buf.String()
+
+	if actualOutput != expectedOutput {
+		t.Errorf("Info() output = %q, want %q", actualOutput, expectedOutput)
+	}
+}
+
+func TestWarning(t *testing.T) {
+	// Save original stdout
+	oldStdout := os.Stdout
+	defer func() { os.Stdout = oldStdout }()
+
+	// Create a pipe
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
+
+	// Replace stdout
+	os.Stdout = w
+
+	// Call Warning
+	expectedMessage := "Test warning message"
+	Warning(expectedMessage)
+
+	// Close writer so reader can finish reading
+	w.Close()
+
+	// Read from pipe
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, r)
+	if err != nil {
+		t.Fatalf("Failed to read from pipe: %v", err)
+	}
+
+	expectedOutput := "\x1b[36;1m" + expectedMessage + "\x1b[0m\n"
+	actualOutput := buf.String()
+
+	if actualOutput != expectedOutput {
+		t.Errorf("Warning() output = %q, want %q", actualOutput, expectedOutput)
 	}
 }
