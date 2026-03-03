@@ -162,3 +162,42 @@ func TestIsValidName(t *testing.T) {
 		})
 	}
 }
+
+func TestWarning(t *testing.T) {
+	// Keep the original stdout to restore it later
+	oldStdout := os.Stdout
+	defer func() {
+		os.Stdout = oldStdout
+	}()
+
+	// Create a pipe to capture stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("failed to create pipe: %v", err)
+	}
+	os.Stdout = w
+
+	// Call the function
+	testMessage := "this is a warning"
+	Warning(testMessage)
+
+	// Close the writer so the reader can reach EOF
+	if err := w.Close(); err != nil {
+		t.Fatalf("failed to close pipe writer: %v", err)
+	}
+
+	// Read the output
+	var buf []byte
+	buf = make([]byte, 1024)
+	n, err := r.Read(buf)
+	if err != nil {
+		t.Fatalf("failed to read from pipe: %v", err)
+	}
+	output := string(buf[:n])
+
+	// Verify the output matches the expected formatted warning
+	expected := "\x1b[36;1m" + testMessage + "\x1b[0m\n"
+	if output != expected {
+		t.Errorf("Warning() output = %q, want %q", output, expected)
+	}
+}
