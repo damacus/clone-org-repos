@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/shurcooL/githubv4"
@@ -48,15 +49,22 @@ func Checkout(token, org, path string) {
 
 	}
 
-	for _, node := range allNodes {
-		if !isValidName(node.Name) {
-			Warning("Skipping repository with invalid name: " + node.Name)
-			continue
-		}
-		Info("Cloning repository: " + node.Name)
-		Info("SSH Clone URL: " + node.SshUrl)
-		cloneOrUpdate(filepath.Join(path, org, node.Name), node.SshUrl)
+	var wg sync.WaitGroup
+	// Limit concurrency to 10 to avoid resource exhaustion
+	sem := make(chan struct{}, 10)
+
+	for _, n := range allNodes {
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(n node) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			Info("Cloning repository: " + n.Name)
+			Info("SSH Clone URL: " + n.SshUrl)
+			cloneOrUpdate(filepath.Join(path, org, n.Name), n.SshUrl)
+		}(n)
 	}
+	wg.Wait()
 }
 
 func isValidName(name string) bool {
